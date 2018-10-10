@@ -1,0 +1,36 @@
+
+cat input1.txt | python3 mapper1-nonumpy.py | python3 combiner1.py | sort | python3 reducer1.py | python3 mapper2.py | sort -k2nr | python3 reducer2.py | python3 find_english.py
+
+
+%%bash
+
+OUT_DIR="assignment4_"$(date +"%s%6N")
+OUT_DIR2="assignment4_b_"$(date +"%s%6N")
+NUM_REDUCERS=4
+
+# Code for your first job
+yarn jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
+    -files mapper1.py,reducer1.py,combiner1.py,/datasets/stop_words_en.txt \
+    -mapper 'python3 mapper1.py' \
+    -combiner 'python3 combiner1.py' \
+    -reducer 'python3 reducer1.py' \
+    -numReduceTasks ${NUM_REDUCERS} \
+    -input /data/wiki/en_articles_part \
+    -output ${OUT_DIR} > /dev/null
+
+# Code for your second job
+yarn jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
+    -D mapreduce.job.output.key.comparator.class=org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedComparator \
+    -D mapreduce.partition.keycomparator.options="-k2nr" \
+    -files mapper2.py,reducer2.py,find_english.py \
+    -mapper 'python3 mapper2.py' \
+    -reducer 'python3 reducer2.py' \
+    -numReduceTasks 1 \
+    -input ${OUT_DIR} \
+    -output ${OUT_DIR2} > /dev/null
+
+# Code for obtaining the results
+hdfs dfs -cat ${OUT_DIR2}/part-00000 | python3 ./find_english.py
+
+hdfs dfs -rm -r -skipTrash ${OUT_DIR}* > /dev/null
+hdfs dfs -rm -r -skipTrash ${OUT_DIR2}* > /dev/null

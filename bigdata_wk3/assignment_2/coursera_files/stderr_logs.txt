@@ -1,0 +1,79 @@
+18/09/15 19:40:40 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+18/09/15 19:40:41 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+18/09/15 19:40:41 INFO mapred.FileInputFormat: Total input files to process : 1
+18/09/15 19:40:41 INFO mapreduce.JobSubmitter: number of splits:2
+18/09/15 19:40:41 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1537033027083_0016
+18/09/15 19:40:42 INFO impl.YarnClientImpl: Submitted application application_1537033027083_0016
+18/09/15 19:40:42 INFO mapreduce.Job: The url to track the job: http://ca5814c27f3d:8088/proxy/application_1537033027083_0016/
+18/09/15 19:40:42 INFO mapreduce.Job: Running job: job_1537033027083_0016
+18/09/15 19:40:48 INFO mapreduce.Job: Job job_1537033027083_0016 running in uber mode : false
+18/09/15 19:40:48 INFO mapreduce.Job:  map 0% reduce 0%
+18/09/15 19:40:58 INFO mapreduce.Job:  map 50% reduce 0%
+18/09/15 19:40:59 INFO mapreduce.Job:  map 100% reduce 0%
+18/09/15 19:41:03 INFO mapreduce.Job:  map 100% reduce 13%
+18/09/15 19:41:04 INFO mapreduce.Job:  map 100% reduce 25%
+18/09/15 19:41:05 INFO mapreduce.Job:  map 100% reduce 38%
+18/09/15 19:41:06 INFO mapreduce.Job:  map 100% reduce 63%
+18/09/15 19:41:07 INFO mapreduce.Job:  map 100% reduce 75%
+18/09/15 19:41:08 INFO mapreduce.Job:  map 100% reduce 100%
+18/09/15 19:41:09 INFO mapreduce.Job: Job job_1537033027083_0016 completed successfully
+18/09/15 19:41:09 INFO mapreduce.Job: Counters: 51
+	File System Counters
+		FILE: Number of bytes read=45482
+		FILE: Number of bytes written=1495698
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=76874501
+		HDFS: Number of bytes written=120
+		HDFS: Number of read operations=30
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=16
+	Job Counters 
+		Launched map tasks=2
+		Launched reduce tasks=8
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=16563
+		Total time spent by all reduces in occupied slots (ms)=18490
+		Total time spent by all map tasks (ms)=16563
+		Total time spent by all reduce tasks (ms)=18490
+		Total vcore-milliseconds taken by all map tasks=16563
+		Total vcore-milliseconds taken by all reduce tasks=18490
+		Total megabyte-milliseconds taken by all map tasks=16960512
+		Total megabyte-milliseconds taken by all reduce tasks=18933760
+	Map-Reduce Framework
+		Map input records=4100
+		Map output records=4100
+		Map output bytes=37234
+		Map output materialized bytes=45530
+		Input split bytes=228
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=3005
+		Reduce shuffle bytes=45530
+		Reduce input records=4100
+		Reduce output records=8
+		Spilled Records=8200
+		Shuffled Maps =16
+		Failed Shuffles=0
+		Merged Map outputs=16
+		GC time elapsed (ms)=626
+		CPU time spent (ms)=8750
+		Physical memory (bytes) snapshot=2098503680
+		Virtual memory (bytes) snapshot=20154302464
+		Total committed heap usage (bytes)=1585971200
+	Personal Counters
+		Stop words=4966261
+		Total words=11937375
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=76874273
+	File Output Format Counters 
+		Bytes Written=120
+18/09/15 19:41:09 INFO streaming.StreamJob: Output directory: coursera_mr_task21537040439551346

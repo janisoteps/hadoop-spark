@@ -1,0 +1,36 @@
+%%bash
+
+OUT_DIR="assignment3_"$(date +"%s%6N")
+OUT_DIR2="assignment3_b_"$(date +"%s%6N")
+LOGS="stderr_logs.txt"
+LOGS2="stderr_logs2.txt"
+NUM_REDUCERS=4
+REDUCER_OUTPUT="reducer_output.txt"
+
+# Code for your first job
+yarn jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
+    -files mapper1.py,reducer1.py,combiner1.py \
+    -mapper 'python3 mapper1.py' \
+    -combiner 'python3 combiner1.py' \
+    -reducer 'python3 reducer1.py' \
+    -numReduceTasks ${NUM_REDUCERS} \
+    -input /data/wiki/en_articles_part \
+    -output ${OUT_DIR} > /dev/null 2> ${LOGS}
+
+# Code for your second job
+yarn jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
+    -D mapreduce.job.output.key.comparator.class=org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedComparator \
+    -D mapreduce.partition.keycomparator.options="-k1,3nr" \
+    -files mapper2.py,reducer2.py \
+    -mapper 'python3 mapper2.py' \
+    -reducer 'python3 reducer2.py' \
+    -numReduceTasks 1 \
+    -input ${OUT_DIR} \
+    -output ${OUT_DIR2} > /dev/null 2> ${LOGS2}
+
+# Code for obtaining the results
+hdfs dfs -cat ${OUT_DIR2}/part-00000 | sed -n "5p;8q"
+# hdfs dfs -cat ${OUT_DIR2}/part-00000 > ${REDUCER_OUTPUT}
+
+hdfs dfs -rm -r -skipTrash ${OUT_DIR}* > /dev/null
+hdfs dfs -rm -r -skipTrash ${OUT_DIR2}* > /dev/null
