@@ -6,8 +6,8 @@ sc = SparkContext(conf=SparkConf().setAppName("Collocations").setMaster("local")
 stop_word_path = "stop_words_en.txt"
 wiki_path = "input1.txt"
 bigram_filter_threshold = 2
-print_top_threshold = 5
-# wiki_path = "/data/wiki/en_articles_part/articles-part"
+print_top_threshold = 3
+# wiki_path = "/data/wiki/en_articles_part"
 # stop_word_path = "/datasets/stop_words_en.txt"
 # bigram_filter_threshold = 500
 # print_top_threshold = 39
@@ -23,9 +23,9 @@ def load_stop_words(path):
 
 def parse_article(line):
     try:
-        article_id, text = unicode(line.rstrip()).split('\t', 1)
-        text = re.sub("^\W+|\W+$", "", text, flags=re.UNICODE).lower()
-        words = re.split("\W*\s+\W*", text, flags=re.UNICODE)
+        article_id, text = line.rstrip().split('\t', 1)
+        text = re.sub("^\W+|\W+$", "", text).lower()
+        words = re.split("\W*\s+\W*", text)
         return words
     except ValueError as e:
         return []
@@ -43,8 +43,8 @@ def get_bigrams(input_words):
     bigrams = []
     for word in input_words:
         if input_words.index(word) < len(input_words) - 1:
-            bigram = word + "_" + input_words[input_words.index(word) + 1]
-            bigrams.append((bigram, 1))
+            output_bigram = word + "_" + input_words[input_words.index(word) + 1]
+            bigrams.append((output_bigram, 1))
     return bigrams
 
 
@@ -62,9 +62,9 @@ def get_word_probs(input_tuple):
 
 
 def get_bigram_probs(input_tuple):
-    bigram, count = input_tuple
+    input_bigram, count = input_tuple
     prob = float(count) / float(total_bigram_count_bcast.value)
-    return bigram, prob
+    return input_bigram, prob
 
 
 def calc_npmi(input_tuple):
@@ -86,10 +86,7 @@ filtered_wiki.cache()
 
 word_tuples = filtered_wiki.flatMap(get_word_tuples)
 word_counts = word_tuples.reduceByKey(lambda x, y: x + y)
-
-word_count_tuples = wiki.flatMap(get_word_tuples)
-word_count_agg = word_count_tuples.reduceByKey(lambda x, y: x + y)
-total_word_count = word_count_agg.values().sum()
+total_word_count = word_counts.values().sum()
 total_count_bcast = sc.broadcast(total_word_count)
 
 word_probabilities = word_counts.map(get_word_probs).collectAsMap()
@@ -97,10 +94,7 @@ word_probs_bcast = sc.broadcast(word_probabilities)
 
 bigram_tuples = filtered_wiki.flatMap(get_bigrams)
 bigram_counts = bigram_tuples.reduceByKey(lambda x, y: x + y)
-
-bigram_count_tuples = wiki.flatMap(get_bigrams)
-bigram_count_agg = bigram_count_tuples.reduceByKey(lambda x, y: x + y)
-total_bigram_count = bigram_count_agg.values().sum()
+total_bigram_count = bigram_counts.values().sum()
 total_bigram_count_bcast = sc.broadcast(total_bigram_count)
 
 filtered_bigrams = bigram_counts.filter(lambda x: x[1] >= bigram_filter_threshold)
@@ -109,4 +103,4 @@ bigram_npmis = bigram_probs.map(calc_npmi)
 bigram_npmis_sorted = bigram_npmis.sortBy(lambda x: -x[1])
 
 for bigram in bigram_npmis_sorted.collect()[:print_top_threshold]:
-    print bigram[0]
+    print(bigram[0])

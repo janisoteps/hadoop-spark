@@ -3,14 +3,14 @@ import math
 from pyspark import SparkConf, SparkContext
 
 sc = SparkContext(conf=SparkConf().setAppName("Collocations").setMaster("local"))
-stop_word_path = "stop_words_en.txt"
-wiki_path = "input1.txt"
-bigram_filter_threshold = 2
-print_top_threshold = 5
-# wiki_path = "/data/wiki/en_articles_part/articles-part"
-# stop_word_path = "/datasets/stop_words_en.txt"
-# bigram_filter_threshold = 500
-# print_top_threshold = 39
+# stop_word_path = "stop_words_en.txt"
+# wiki_path = "input1.txt"
+# bigram_filter_threshold = 2
+# print_top_threshold = 5
+wiki_path = "/data/wiki/en_articles_part"
+stop_word_path = "/datasets/stop_words_en.txt"
+bigram_filter_threshold = 500
+print_top_threshold = 39
 
 
 def load_stop_words(path):
@@ -23,9 +23,9 @@ def load_stop_words(path):
 
 def parse_article(line):
     try:
-        article_id, text = unicode(line.rstrip()).split('\t', 1)
-        text = re.sub("^\W+|\W+$", "", text, flags=re.UNICODE).lower()
-        words = re.split("\W*\s+\W*", text, flags=re.UNICODE)
+        article_id, text = line.rstrip().split('\t', 1)
+        text = re.sub("^\W+|\W+$", "", text).lower()
+        words = re.split("\W*\s+\W*", text)
         return words
     except ValueError as e:
         return []
@@ -109,4 +109,4 @@ bigram_npmis = bigram_probs.map(calc_npmi)
 bigram_npmis_sorted = bigram_npmis.sortBy(lambda x: -x[1])
 
 for bigram in bigram_npmis_sorted.collect()[:print_top_threshold]:
-    print bigram[0]
+    print(bigram[0])

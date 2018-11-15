@@ -7,7 +7,7 @@ stop_word_path = "stop_words_en.txt"
 wiki_path = "input1.txt"
 bigram_filter_threshold = 2
 print_top_threshold = 5
-# wiki_path = "/data/wiki/en_articles_part/articles-part"
+# wiki_path = "/data/wiki/en_articles_part"
 # stop_word_path = "/datasets/stop_words_en.txt"
 # bigram_filter_threshold = 500
 # print_top_threshold = 39
@@ -109,4 +109,4 @@ bigram_npmis = bigram_probs.map(calc_npmi)
 bigram_npmis_sorted = bigram_npmis.sortBy(lambda x: -x[1])
 
 for bigram in bigram_npmis_sorted.collect()[:print_top_threshold]:
-    print bigram[0]
+    print(bigram[0])

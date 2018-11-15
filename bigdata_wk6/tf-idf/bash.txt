@@ -1,0 +1,36 @@
+
+
+cat input1.txt | python3 mapper_1.py | sort | python3 reducer_1.py | python3 mapper_2.py | sort | python3 reducer_2.py | python3 find_labor_12.py
+
+
+%%bash
+
+OUT_DIR_1="week_6_tf_idf_a_"$(date +"%s%6N")
+OUT_DIR_2="week_6_tf_idf_b_"$(date +"%s%6N")
+NUM_REDUCERS_1=8
+NUM_REDUCERS_2=1
+
+# Code for first job
+yarn jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
+    -files mapper_1.py,reducer_1.py,/datasets/stop_words_en.txt \
+    -mapper 'python3 mapper_1.py' \
+    -reducer 'python3 reducer_1.py' \
+    -numReduceTasks ${NUM_REDUCERS_1} \
+    -input /data/wiki/en_articles_part \
+    -output ${OUT_DIR_1} > /dev/null
+
+# Code for second job
+yarn jar /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce/hadoop-streaming.jar \
+    -files mapper_2.py,reducer_2.py,find_labor_12.py \
+    -mapper 'python3 mapper_2.py' \
+    -reducer 'python3 reducer_2.py' \
+    -numReduceTasks ${NUM_REDUCERS_2} \
+    -input ${OUT_DIR_1} \
+    -output ${OUT_DIR_2} > /dev/null
+
+# Code for obtaining the results
+hdfs dfs -cat ${OUT_DIR_2}/part-00000 | python3 ./find_labor_12.py
+
+hdfs dfs -rm -r -skipTrash ${OUT_DIR}* > /dev/null
+hdfs dfs -rm -r -skipTrash ${OUT_DIR2}* > /dev/null
+
